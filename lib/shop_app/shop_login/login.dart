@@ -1,6 +1,7 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:untitled/components/components.dart';
 import 'package:untitled/shop_app/shop_login/login_cubit/cubit.dart';
 import 'package:untitled/shop_app/shop_login/login_cubit/states.dart';
@@ -9,16 +10,49 @@ import 'package:untitled/styles/colors.dart';
 
 class ShopLogin extends StatelessWidget {
 
-  var formKey = GlobalKey<FormState>();
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+  final  formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+   ShopLogin({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => ShopLoginCubit(),
       child: BlocConsumer<ShopLoginCubit,ShopLoginStates>(
-         listener: (context,state){},
+         listener: (context,state)
+         {
+           if (state is ShopLoginSuccessState)
+           {
+             if(state.loginModel.status!)
+             {
+               Fluttertoast.showToast(
+                   msg: state.loginModel.message!,
+                   toastLength: Toast.LENGTH_LONG,
+                   gravity: ToastGravity.BOTTOM,
+                   timeInSecForIosWeb: 5,
+                   backgroundColor: Colors.green,
+                   textColor: Colors.white,
+                   fontSize: 16.0
+               );
+             }
+             else
+             {
+               {
+                 Fluttertoast.showToast(
+                     msg: state.loginModel.message!,
+                     toastLength: Toast.LENGTH_LONG,
+                     gravity: ToastGravity.BOTTOM,
+                     timeInSecForIosWeb: 5,
+                     backgroundColor: Colors.red,
+                     textColor: Colors.white,
+                     fontSize: 16.0
+                 );
+               }
+             }
+           }
+         },
          builder: (context,state)
          {
            return Scaffold(
@@ -41,35 +75,52 @@ class ShopLogin extends StatelessWidget {
                          ),
                          const SizedBox(height: 30.0,
                          ),
-                         defaultTextFormField(
-                           controller: emailController,
-                           keyboardType: TextInputType.emailAddress,
-                           validator: (value)
-                           {
-                             if(value == null || value.isEmpty)
-                             {
-                               return'email address must not be empty';
-                             }
-                           },
-                           labelText: 'Email Address',
-                           prefix: const Icon(Icons.email_outlined),
-                           radius: const Radius.circular(40),
+                         TextFormField(
+                         controller: emailController,
+                         keyboardType: TextInputType.emailAddress,
+                         obscureText: false,
+                         validator: (value)
+                          {
+                           if(value!.isEmpty)
+                            {
+                             return('please enter email');
+                            }
+                            return null;
+
+                          },
+                         decoration:InputDecoration(
+                         labelText: 'Email Address',
+                         border: OutlineInputBorder(
+                           borderRadius: BorderRadius.circular(20.0),
                          ),
+                         prefixIcon: Icon(Icons.email_outlined),
+                         ),
+
+
+
+
+                     ),
                          const SizedBox(height: 30.0,),
-                         defaultTextFormField(
+                         TextFormField(
                            controller: passwordController,
                            keyboardType: TextInputType.visiblePassword,
+                           obscureText: false,
                            validator: (value)
                            {
-                             if(value == null || value.isEmpty)
+                             if(value!.isEmpty)
                              {
-                               return'password must not be empty';
+                               return('please enter password');
                              }
+                             return null;
                            },
-                           labelText: 'Password',
-                           prefix: const Icon(Icons.lock_outline_rounded),
-                           suffix: const Icon(Icons.remove_red_eye_outlined),
-                           radius: const Radius.circular(40),
+                           decoration:InputDecoration(
+                             labelText: 'Email Address',
+                             border: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(20.0),
+                             ),
+                             prefixIcon: Icon(Icons.lock_outline_rounded),
+                             suffixIcon: Icon(Icons.remove_red_eye_outlined),
+                           ),
                          ),
                          const SizedBox(height: 20.0,),
                          Row(
@@ -96,9 +147,11 @@ class ShopLogin extends StatelessWidget {
                          const SizedBox(height: 20.0,),
                          ConditionalBuilder(
                            condition: state is! ShopLoginLoadingState,
-                           builder: (context)=> defaultButton(
-                               text: 'Login',
-                               function: ()
+                           builder: (context)=> Container(
+                             width: double.infinity,
+                             color: primarySwatch,
+                             child: MaterialButton(
+                               onPressed: ()
                                {
                                  if(formKey.currentState!.validate())
                                  {
@@ -107,9 +160,18 @@ class ShopLogin extends StatelessWidget {
                                        password: passwordController.text
                                    );
                                  }
-                               }
+                               },
+                               child: Text(
+                                 'login'.toUpperCase(),
+                                 style: const TextStyle(
+                                   color: Colors.white,
+                                   fontSize: 20.0,
+                                 ),
+                               ),
+
+                             ),
                            ),
-                           fallback: (context)=> const Center(child: CircularProgressIndicator(
+                             fallback: (context)=> const Center(child: CircularProgressIndicator(
                              color: Colors.teal,
                            ),),
                          ),
