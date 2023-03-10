@@ -76,25 +76,25 @@ class ShopLogin extends StatelessWidget {
                          const SizedBox(height: 30.0,
                          ),
                          TextFormField(
-                       controller: emailController,
-                       keyboardType: TextInputType.emailAddress,
-                       obscureText: false,
-                       validator: (value)
-                       {
-                          if(value!.isEmpty)
+                         controller: emailController,
+                         keyboardType: TextInputType.emailAddress,
+                         obscureText: false,
+                         validator: (value)
                           {
-                            return('please enter email');
-                          }
-                          return null;
+                           if(value!.isEmpty)
+                            {
+                             return('please enter email');
+                            }
+                            return null;
 
-                       },
-                       decoration:InputDecoration(
+                          },
+                         decoration:InputDecoration(
                          labelText: 'Email Address',
                          border: OutlineInputBorder(
                            borderRadius: BorderRadius.circular(20.0),
                          ),
                          prefixIcon: Icon(Icons.email_outlined),
-                       ),
+                         ),
 
 
 
